@@ -50,7 +50,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
       <SiteHeader />
       <Section>
         <Container className="max-w-xl">
-          <Card>
+          <Card interactive={false}>
             <h1 className="font-heading text-heading-xl">{t.title}</h1>
             <p className="mt-2 text-sm text-brand-muted">{t.description}</p>
             <AuthRegisterForm errorCode={params?.error} locale={locale} />

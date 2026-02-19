@@ -144,7 +144,7 @@ export default async function AccountPage() {
       <SiteHeader />
       <Section>
         <Container className="space-y-6">
-          <Card>
+          <Card interactive={false}>
             <h1 className="font-heading text-heading-xl">{t.title}</h1>
             <p className="mt-2 text-sm text-brand-muted">{t.email}: {user.email}</p>
             <p className="text-sm text-brand-muted">{t.name}: {profile?.full_name ?? t.noName}</p>
@@ -152,7 +152,7 @@ export default async function AccountPage() {
             {isAdmin ? <Link href="/admin" className="mt-3 inline-block text-sm underline">{t.toAdmin}</Link> : null}
           </Card>
 
-          <Card>
+          <Card interactive={false}>
             <h2 className="font-heading text-heading-md">{t.contactTitle}</h2>
             <ul className="mt-4 space-y-2 text-sm">
               {(contactRequests ?? []).map((item) => (
@@ -166,7 +166,7 @@ export default async function AccountPage() {
             </ul>
           </Card>
 
-          <Card>
+          <Card interactive={false}>
             <h2 className="font-heading text-heading-md">{t.quoteTitle}</h2>
             <ul className="mt-4 space-y-2 text-sm">
               {(quoteRequests ?? []).map((item) => (

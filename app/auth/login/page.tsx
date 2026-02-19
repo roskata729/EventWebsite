@@ -77,7 +77,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       <SiteHeader />
       <Section>
         <Container className="max-w-xl">
-          <Card>
+          <Card interactive={false}>
             <h1 className="font-heading text-heading-xl">{t.title}</h1>
             <p className="mt-2 text-sm text-brand-muted">{t.description}</p>
             {params?.message === "registered" ? <p className="mt-3 text-sm text-green-300">{t.registered}</p> : null}

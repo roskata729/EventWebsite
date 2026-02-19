@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { HeroMotion } from "@/components/motion/HeroMotion";
+import { UpcomingEventsSection } from "@/components/portfolio/UpcomingEventsSection";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Button } from "@/components/ui/Button";
@@ -111,6 +112,8 @@ export default async function Home() {
           </HeroMotion>
         </Container>
       </Section>
+
+      <UpcomingEventsSection locale={locale} showCalendar={false} sectionClassName="pt-0" />
 
       <Section className="pt-0">
         <Container>

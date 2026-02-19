@@ -1,25 +1,10 @@
 import type { Metadata } from "next";
+import { UpcomingEventsSection } from "@/components/portfolio/UpcomingEventsSection";
 import { PageHero } from "@/components/site/PageHero";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { Card } from "@/components/ui/Card";
-import { Container } from "@/components/ui/Container";
-import { Section } from "@/components/ui/Section";
 import { getMessages } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-function resolveImageUrl(rawUrl: string) {
-  try {
-    const url = new URL(rawUrl);
-    if ((url.hostname === "www.google.com" || url.hostname === "google.com") && url.pathname === "/imgres") {
-      return url.searchParams.get("imgurl") ?? "";
-    }
-    return rawUrl;
-  } catch {
-    return "";
-  }
-}
 
 export const metadata: Metadata = {
   title: "Upcoming Events",
@@ -35,83 +20,13 @@ export const metadata: Metadata = {
 export default async function PortfolioPage() {
   const locale = await getServerLocale();
   const messages = getMessages(locale).portfolio;
-  const uiByLocale = {
-    bg: {
-      upcoming: "Предстоящи събития",
-      empty: "Все още няма публикувани предстоящи събития.",
-      general: "Общи",
-      dateTbd: "Дата не е зададена",
-      noDescription: "Няма описание",
-    },
-    en: {
-      upcoming: "Upcoming events",
-      empty: "No upcoming published events yet.",
-      general: "General",
-      dateTbd: "Date TBD",
-      noDescription: "No description",
-    },
-    ro: {
-      upcoming: "Evenimente viitoare",
-      empty: "Nu exista inca evenimente publicate in perioada urmatoare.",
-      general: "General",
-      dateTbd: "Data neprecizata",
-      noDescription: "Fara descriere",
-    },
-  } as const;
-  const ui = uiByLocale[locale];
-
-  const supabase = createSupabaseServerClient();
-  const today = new Date().toISOString().slice(0, 10);
-
-  const { data: events } = await supabase
-    .from("events")
-    .select("id, title, slug, description, category, event_date, location, cover_image_url")
-    .eq("is_published", true)
-    .gte("event_date", today)
-    .order("event_date", { ascending: true });
 
   return (
     <main className="min-h-screen bg-brand-background">
       <SiteHeader />
       <PageHero eyebrow={messages.heroEyebrow} title={messages.heroTitle} description={messages.heroDescription} />
 
-      <Section>
-        <Container>
-          <h2 className="mb-6 font-heading text-heading-xl">{ui.upcoming}</h2>
-
-          {!events || events.length === 0 ? (
-            <Card>
-              <p className="text-sm text-brand-muted">{ui.empty}</p>
-            </Card>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {events.map((event) => (
-                <Card key={event.id} className="overflow-hidden p-0">
-                  <div className="relative h-52 w-full">
-                    {resolveImageUrl(event.cover_image_url) ? (
-                      // Dynamic external URLs can be from arbitrary hosts, so render as native img to avoid next/image host crashes.
-                      <img
-                        src={resolveImageUrl(event.cover_image_url)}
-                        alt={event.title}
-                        loading="lazy"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-brand-elevated" />
-                    )}
-                  </div>
-                  <div className="space-y-2 p-5">
-                    <p className="text-xs uppercase tracking-[0.14em] text-brand-accentSoft">{event.category ?? ui.general}</p>
-                    <h3 className="font-heading text-heading-md">{event.title}</h3>
-                    <p className="text-xs text-brand-muted">{event.event_date ?? ui.dateTbd}{event.location ? ` - ${event.location}` : ""}</p>
-                    <p className="text-sm text-brand-muted">{event.description ?? ui.noDescription}</p>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </Container>
-      </Section>
+      <UpcomingEventsSection locale={locale} showCalendar />
 
       <SiteFooter />
     </main>

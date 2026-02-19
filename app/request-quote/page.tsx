@@ -30,7 +30,7 @@ export default async function RequestQuotePage() {
     <main className="min-h-screen bg-brand-background">
       <SiteHeader />
       <PageHero eyebrow={messages.heroEyebrow} title={messages.heroTitle} description={messages.heroDescription} />
-      <Section><Container className="max-w-4xl"><Card><h2 className="font-heading text-heading-lg">{messages.formTitle}</h2><QuoteForm locale={locale} initialEmail={user.email ?? ""} lockEmail /></Card></Container></Section>
+      <Section><Container className="max-w-4xl"><Card interactive={false}><h2 className="font-heading text-heading-lg">{messages.formTitle}</h2><QuoteForm locale={locale} initialEmail={user.email ?? ""} lockEmail /></Card></Container></Section>
       <SiteFooter />
     </main>
   );

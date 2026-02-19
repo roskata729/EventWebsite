@@ -39,19 +39,19 @@ export default async function ContactPage() {
       <PageHero eyebrow={messages.heroEyebrow} title={messages.heroTitle} description={messages.heroDescription} />
       <Section>
         <Container className="grid gap-6 lg:grid-cols-2">
-          <Card>
+          <Card interactive={false}>
             <h2 className="font-heading text-heading-lg">{messages.formTitle}</h2>
             <ContactForm locale={locale} initialEmail={user.email ?? ""} lockEmail />
           </Card>
           <div className="space-y-6">
-            <Card>
+            <Card interactive={false}>
               <h3 className="font-heading text-heading-md">{messages.officeTitle}</h3>
               <p className="mt-3 text-sm text-brand-muted">{messages.officeAddress}</p>
               <div className="mt-4 h-64 overflow-hidden rounded-2xl border border-brand-accent/30">
-                <iframe title={messages.mapTitle} src="https://maps.google.com/maps?q=Sofia&t=&z=13&ie=UTF8&iwloc=&output=embed" className="h-full w-full" />
+                <iframe title={messages.mapTitle} src="https://maps.google.com/maps?q=%D1%83%D0%BB.%20%D0%91%D0%BE%D1%80%D0%B8%D1%81%D0%BE%D0%B2%D0%B0%2056%2C%20%D0%A0%D1%83%D1%81%D0%B5%2C%20%D0%91%D1%8A%D0%BB%D0%B3%D0%B0%D1%80%D0%B8%D1%8F&t=&z=15&ie=UTF8&iwloc=&output=embed" className="h-full w-full" />
               </div>
             </Card>
-            <Card>
+            <Card interactive={false}>
               <h3 className="font-heading text-heading-md">{messages.socialTitle}</h3>
               <p className="mt-3 text-sm text-brand-muted">{messages.phone}: +359 700 123 45</p>
               <p className="text-sm text-brand-muted">{messages.email}: hello@sabitiakolevi.bg</p>
