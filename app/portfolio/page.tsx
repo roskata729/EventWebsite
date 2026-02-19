@@ -1,48 +1,94 @@
 import type { Metadata } from "next";
-import { PortfolioGallery } from "@/components/portfolio/PortfolioGallery";
 import { PageHero } from "@/components/site/PageHero";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
-import { loadPublishedGallery } from "@/lib/cms";
 import { getMessages } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n/server";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+function resolveImageUrl(rawUrl: string) {
+  try {
+    const url = new URL(rawUrl);
+    if ((url.hostname === "www.google.com" || url.hostname === "google.com") && url.pathname === "/imgres") {
+      return url.searchParams.get("imgurl") ?? "";
+    }
+    return rawUrl;
+  } catch {
+    return "";
+  }
+}
 
 export const metadata: Metadata = {
-  title: "Портфолио",
-  description: "Разгледайте подбрани реализирани събития в портфолиото на Събития Колеви.",
-  openGraph: { title: "Портфолио | Събития Колеви", description: "Подбрани събития с визуални акценти.", url: "/portfolio", type: "website" },
-};
-
-const fallbackGalleryByLocale = {
-  bg: [
-    { id: 1, title: "Луксозна гала вечеря", category: "Корпоративни", description: "Корпоративна гала с впечатляващо осветление и сценография по бранд насоки.", imageUrl: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1000&q=80" },
-    { id: 2, title: "Градинска сватба", category: "Сватби", description: "Романтична церемония на открито с флорални арки и вечерна светлинна концепция.", imageUrl: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80" },
-    { id: 3, title: "Премиерно частно парти", category: "Частни", description: "Енергично събитие с тематични зони, музика на живо и персонализиран декор.", imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1000&q=80" },
-  ],
-  en: [
-    { id: 1, title: "Luxury gala dinner", category: "Corporate", description: "Corporate gala with striking lighting and brand-aligned stage design.", imageUrl: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1000&q=80" },
-    { id: 2, title: "Garden wedding", category: "Weddings", description: "Romantic outdoor ceremony with floral arches and an evening lighting concept.", imageUrl: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80" },
-    { id: 3, title: "Premiere private party", category: "Private", description: "High-energy event with themed zones, live music, and personalized decor.", imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1000&q=80" },
-  ],
-  ro: [
-    { id: 1, title: "Cină de gală luxoasă", category: "Corporate", description: "Gală corporate cu iluminat impresionant și scenografie adaptată brandului.", imageUrl: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1000&q=80" },
-    { id: 2, title: "Nuntă în grădină", category: "Nunți", description: "Ceremonie romantică în aer liber, cu arcade florale și concept de lumini de seară.", imageUrl: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80" },
-    { id: 3, title: "Petrecere privată de lansare", category: "Private", description: "Eveniment dinamic cu zone tematice, muzică live și decor personalizat.", imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1000&q=80" },
-  ],
+  title: "Upcoming Events",
+  description: "All upcoming published events in one place.",
+  openGraph: {
+    title: "Upcoming Events",
+    description: "All upcoming published events in one place.",
+    url: "/portfolio",
+    type: "website",
+  },
 };
 
 export default async function PortfolioPage() {
   const locale = await getServerLocale();
   const messages = getMessages(locale).portfolio;
-  const items = await loadPublishedGallery(fallbackGalleryByLocale[locale]);
+
+  const supabase = createSupabaseServerClient();
+  const today = new Date().toISOString().slice(0, 10);
+
+  const { data: events } = await supabase
+    .from("events")
+    .select("id, title, slug, description, category, event_date, location, cover_image_url")
+    .eq("is_published", true)
+    .gte("event_date", today)
+    .order("event_date", { ascending: true });
 
   return (
     <main className="min-h-screen bg-brand-background">
       <SiteHeader />
       <PageHero eyebrow={messages.heroEyebrow} title={messages.heroTitle} description={messages.heroDescription} />
-      <Section><Container><PortfolioGallery items={items} locale={locale} /></Container></Section>
+
+      <Section>
+        <Container>
+          <h2 className="mb-6 font-heading text-heading-xl">Upcoming events</h2>
+
+          {!events || events.length === 0 ? (
+            <Card>
+              <p className="text-sm text-brand-muted">No upcoming published events yet.</p>
+            </Card>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {events.map((event) => (
+                <Card key={event.id} className="overflow-hidden p-0">
+                  <div className="relative h-52 w-full">
+                    {resolveImageUrl(event.cover_image_url) ? (
+                      // Dynamic external URLs can be from arbitrary hosts, so render as native img to avoid next/image host crashes.
+                      <img
+                        src={resolveImageUrl(event.cover_image_url)}
+                        alt={event.title}
+                        loading="lazy"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-brand-elevated" />
+                    )}
+                  </div>
+                  <div className="space-y-2 p-5">
+                    <p className="text-xs uppercase tracking-[0.14em] text-brand-accentSoft">{event.category ?? "General"}</p>
+                    <h3 className="font-heading text-heading-md">{event.title}</h3>
+                    <p className="text-xs text-brand-muted">{event.event_date ?? "Date TBD"}{event.location ? ` - ${event.location}` : ""}</p>
+                    <p className="text-sm text-brand-muted">{event.description ?? "No description"}</p>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+        </Container>
+      </Section>
+
       <SiteFooter />
     </main>
   );
