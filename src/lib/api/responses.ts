@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
-export type ApiErrorCode = "VALIDATION_ERROR" | "INVALID_JSON" | "INTERNAL_ERROR";
+export type ApiErrorCode = "VALIDATION_ERROR" | "INVALID_JSON" | "UNAUTHORIZED" | "INTERNAL_ERROR";
 
 export type ApiSuccessResponse<T> = {
   success: true;

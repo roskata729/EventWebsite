@@ -18,14 +18,21 @@ export async function POST(request: Request) {
       return jsonError("INTERNAL_ERROR", "Неуспешно удостоверяване на потребителската сесия.", 500);
     }
     const user = authData.user ?? null;
+    if (!user) {
+      return jsonError("UNAUTHORIZED", "Please sign in to send a quote request.", 401);
+    }
+
+    if (!user.email) {
+      return jsonError("VALIDATION_ERROR", "Your account does not have a valid email address.", 400);
+    }
 
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
       .from("quote_requests")
       .insert({
-        user_id: user?.id ?? null,
+        user_id: user.id,
         name: validated.name,
-        email: validated.email,
+        email: user.email,
         phone: validated.phone || null,
         event_type: validated.eventType,
         event_date: validated.eventDate || null,

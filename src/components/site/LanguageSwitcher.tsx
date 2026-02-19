@@ -40,8 +40,8 @@ export function LanguageSwitcher({ locale, labels }: LanguageSwitcherProps) {
           key={code}
           type="button"
           onClick={() => setLocale(code)}
-          className={`rounded-md px-2 py-1 text-[11px] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft ${
-            locale === code ? "bg-brand-accent/20 text-brand-accentSoft" : "text-brand-muted hover:text-brand-accentSoft"
+          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[0.08em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft ${
+            locale === code ? "bg-brand-accent/20 text-brand-accentSoft" : "text-brand-foreground/80 hover:bg-brand-elevated hover:text-brand-accentSoft"
           }`}
           aria-pressed={locale === code}
           aria-label={`${labels.label}: ${localeLabels[code]}`}

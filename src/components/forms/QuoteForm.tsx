@@ -8,14 +8,18 @@ type Errors = Partial<Record<"name" | "email" | "eventType", string>>;
 
 type QuoteFormProps = {
   locale: Locale;
+  initialEmail?: string;
+  lockEmail?: boolean;
 };
 
-export function QuoteForm({ locale }: QuoteFormProps) {
+export function QuoteForm({ locale, initialEmail, lockEmail = false }: QuoteFormProps) {
   const [errors, setErrors] = useState<Errors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const messages = getMessages(locale).quoteForm;
+  const normalizedEmail = initialEmail?.trim() ?? "";
+  const isEmailLocked = lockEmail && normalizedEmail.length > 0;
 
   function validate(formData: FormData) {
     const nextErrors: Errors = {};
@@ -89,7 +93,14 @@ export function QuoteForm({ locale }: QuoteFormProps) {
       </div>
       <div>
         <label htmlFor="quote-email" className="mb-1 block text-sm">{messages.email}</label>
-        <input id="quote-email" name="email" type="email" aria-invalid={Boolean(errors.email)} aria-describedby="quote-email-error" className="w-full rounded-xl border border-brand-accent/30 bg-brand-background p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft" />
+        {isEmailLocked ? (
+          <>
+            <input id="quote-email" type="email" value={normalizedEmail} disabled aria-invalid={Boolean(errors.email)} aria-describedby="quote-email-error" className="w-full cursor-not-allowed rounded-xl border border-brand-accent/30 bg-brand-surface p-3 text-brand-muted opacity-90" />
+            <input type="hidden" name="email" value={normalizedEmail} />
+          </>
+        ) : (
+          <input id="quote-email" name="email" type="email" defaultValue={normalizedEmail} aria-invalid={Boolean(errors.email)} aria-describedby="quote-email-error" className="w-full rounded-xl border border-brand-accent/30 bg-brand-background p-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft" />
+        )}
         <p id="quote-email-error" className="mt-1 text-sm text-red-300" role="alert">{errors.email}</p>
       </div>
       <div>

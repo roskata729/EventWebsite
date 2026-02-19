@@ -43,7 +43,7 @@ export function PortfolioGallery({ items, locale }: PortfolioGalleryProps) {
     <div className="space-y-8">
       <div className="flex flex-wrap gap-3">
         {filters.map((filter) => (
-          <Button key={filter} className={activeFilter === filter ? "" : "border-brand-accent/40 bg-brand-surface text-brand-accentSoft"} onClick={() => setActiveFilter(filter)} type="button">
+          <Button key={filter} variant={activeFilter === filter ? "primary" : "secondary"} onClick={() => setActiveFilter(filter)} type="button">
             {filter}
           </Button>
         ))}

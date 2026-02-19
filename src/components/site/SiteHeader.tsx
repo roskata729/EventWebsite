@@ -22,44 +22,57 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-20 border-b border-brand-accent/20 bg-brand-background/95 backdrop-blur">
-      <Container className="flex flex-wrap items-center justify-between gap-4 py-4">
-        <Link href="/" className="font-heading text-2xl text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
-          {messages.siteName}
-        </Link>
-        <nav className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.12em] text-brand-muted sm:text-sm">
-          {links.map((link) => (
-            <Link key={link.href} href={link.href} className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
-              {link.label}
-            </Link>
-          ))}
-          {user ? (
-            <>
-              <Link href="/account" className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
-                {messages.header.auth.profile}
+      <Container className="py-4">
+        <div className="grid items-center gap-3 lg:grid-cols-[auto_1fr_auto]">
+          <Link href="/" className="font-heading text-2xl text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+            {messages.siteName}
+          </Link>
+
+          <nav className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-xs uppercase tracking-[0.12em] text-brand-muted sm:text-sm lg:justify-end">
+            {links.map((link) => (
+              <Link key={link.href} href={link.href} className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                {link.label}
               </Link>
-              {isAdmin ? (
-                <Link href="/admin" className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
-                  Admin
-                </Link>
-              ) : null}
-              <form action={signOutAction}>
-                <button type="submit" className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
-                  {messages.header.auth.signOut}
-                </button>
-              </form>
-            </>
-          ) : (
-            <>
-              <Link href="/auth/login" className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
-                {messages.header.auth.login}
-              </Link>
-              <Link href="/auth/register" className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
-                {messages.header.auth.register}
-              </Link>
-            </>
-          )}
-          <LanguageSwitcher locale={locale} labels={messages.header.language} />
-        </nav>
+            ))}
+          </nav>
+
+          <div className="justify-self-start rounded-xl border border-brand-accent/25 bg-brand-surface/40 px-3 py-2 lg:justify-self-end">
+            <div className="flex flex-nowrap items-center gap-2">
+              {user ? (
+                <>
+                  <Link href="/account" className="whitespace-nowrap rounded-full border border-brand-accent/30 px-3 py-1 text-xs uppercase tracking-[0.12em] text-brand-muted transition hover:border-brand-accent/60 hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                    {messages.header.auth.profile}
+                  </Link>
+                  {isAdmin ? (
+                    <Link href="/admin" className="whitespace-nowrap rounded-full border border-brand-accent/30 px-3 py-1 text-xs uppercase tracking-[0.12em] text-brand-muted transition hover:border-brand-accent/60 hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                      Admin
+                    </Link>
+                  ) : null}
+                  <form action={signOutAction}>
+                    <button type="submit" className="whitespace-nowrap rounded-full border border-brand-accent/30 px-3 py-1 text-xs uppercase tracking-[0.12em] text-brand-muted transition hover:border-brand-accent/60 hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                      {messages.header.auth.signOut}
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/login" className="whitespace-nowrap rounded-full border border-brand-accent/30 px-3 py-1 text-xs uppercase tracking-[0.12em] text-brand-muted transition hover:border-brand-accent/60 hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                    {messages.header.auth.login}
+                  </Link>
+                  <Link href="/auth/register" className="whitespace-nowrap rounded-full border border-brand-accent/30 px-3 py-1 text-xs uppercase tracking-[0.12em] text-brand-muted transition hover:border-brand-accent/60 hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                    {messages.header.auth.register}
+                  </Link>
+                </>
+              )}
+            </div>
+
+            <div className="mt-2 flex justify-center">
+              <div className="rounded-full border border-brand-accent/25 bg-brand-surface/70 p-1">
+                <LanguageSwitcher locale={locale} labels={messages.header.language} />
+              </div>
+            </div>
+          </div>
+        </div>
       </Container>
     </header>
   );

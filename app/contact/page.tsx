@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { PageHero } from "@/components/site/PageHero";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -8,6 +9,7 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { getMessages } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n/server";
+import { getCurrentUserSession } from "@/lib/supabase/user-auth";
 
 export const metadata: Metadata = {
   title: "Контакти",
@@ -19,6 +21,11 @@ export default async function ContactPage() {
   const locale = await getServerLocale();
   const allMessages = getMessages(locale);
   const messages = allMessages.contact;
+  const { user } = await getCurrentUserSession();
+
+  if (!user) {
+    redirect("/auth/login?next=/contact");
+  }
 
   return (
     <main className="min-h-screen bg-brand-background">
@@ -28,7 +35,7 @@ export default async function ContactPage() {
         <Container className="grid gap-6 lg:grid-cols-2">
           <Card>
             <h2 className="font-heading text-heading-lg">{messages.formTitle}</h2>
-            <ContactForm locale={locale} />
+            <ContactForm locale={locale} initialEmail={user.email ?? ""} lockEmail />
           </Card>
           <div className="space-y-6">
             <Card>

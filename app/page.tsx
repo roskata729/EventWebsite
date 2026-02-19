@@ -81,7 +81,7 @@ export default async function Home() {
             <p className="mx-auto mt-5 max-w-2xl text-sm text-brand-muted sm:text-base">{messages.home.description}</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link href="/request-quote"><Button>{messages.home.ctaQuote}</Button></Link>
-              <Link href="/portfolio"><Button className="border-brand-accent/40 bg-brand-surface text-brand-accentSoft">{messages.home.ctaPortfolio}</Button></Link>
+              <Link href="/portfolio"><Button variant="secondary">{messages.home.ctaPortfolio}</Button></Link>
             </div>
           </HeroMotion>
         </Container>
