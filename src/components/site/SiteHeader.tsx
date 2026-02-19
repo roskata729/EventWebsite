@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { signOutAction } from "@/app/auth/actions";
+import { getCurrentUserContext } from "@/lib/supabase/user-auth";
 import { Container } from "@/components/ui/Container";
 
 const links = [
@@ -10,7 +12,9 @@ const links = [
   { href: "/request-quote", label: "Заяви оферта" },
 ];
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const { user, isAdmin } = await getCurrentUserContext();
+
   return (
     <header className="sticky top-0 z-20 border-b border-brand-accent/20 bg-brand-background/95 backdrop-blur">
       <Container className="flex flex-wrap items-center justify-between gap-4 py-4">
@@ -23,6 +27,32 @@ export function SiteHeader() {
               {link.label}
             </Link>
           ))}
+          {user ? (
+            <>
+              <Link href="/account" className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                Профил
+              </Link>
+              {isAdmin ? (
+                <Link href="/admin" className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                  Admin
+                </Link>
+              ) : null}
+              <form action={signOutAction}>
+                <button type="submit" className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                  Изход
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link href="/auth/login" className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                Вход
+              </Link>
+              <Link href="/auth/register" className="transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
+                Регистрация
+              </Link>
+            </>
+          )}
         </nav>
       </Container>
     </header>

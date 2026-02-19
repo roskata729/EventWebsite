@@ -19,3 +19,7 @@ export function getSupabaseAnonKey() {
 export function getSupabaseServiceRoleKey() {
   return getEnvVariable("SUPABASE_SERVICE_ROLE_KEY");
 }
+
+export function getSiteUrl() {
+  return process.env.NEXT_PUBLIC_SITE_URL ?? process.env.SITE_URL ?? "http://localhost:3000";
+}

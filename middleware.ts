@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
-import { isAdminUser } from "@/lib/supabase/roles";
+import { isAdminSession } from "@/lib/supabase/roles";
 import type { Database } from "@/lib/supabase/types";
 
 export async function middleware(request: NextRequest) {
@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!isAdminUser(user)) {
+  if (!(await isAdminSession(supabase, user))) {
     const redirectUrl = new URL("/", request.url);
     redirectUrl.searchParams.set("forbidden", "admin");
     return NextResponse.redirect(redirectUrl);

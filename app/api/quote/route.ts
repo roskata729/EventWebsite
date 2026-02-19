@@ -1,6 +1,7 @@
 import { ZodError } from "zod";
 import { jsonError, jsonSuccess, mapZodError } from "@/lib/api/responses";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerAuthClient } from "@/lib/supabase/server-auth";
 import { quoteRequestSchema } from "@/lib/validation/quote";
 
 export async function POST(request: Request) {
@@ -8,10 +9,16 @@ export async function POST(request: Request) {
     const payload = await request.json();
     const validated = quoteRequestSchema.parse(payload);
 
+    const authSupabase = await createSupabaseServerAuthClient();
+    const {
+      data: { user },
+    } = await authSupabase.auth.getUser();
+
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
       .from("quote_requests")
       .insert({
+        user_id: user?.id ?? null,
         name: validated.name,
         email: validated.email,
         phone: validated.phone || null,
@@ -27,7 +34,18 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
-      return jsonError("INTERNAL_ERROR", "Неуспешно изпращане на запитването за оферта.", 500);
+      console.error("[POST /api/quote] Supabase insert failed", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
+
+      return jsonError(
+        "INTERNAL_ERROR",
+        `Неуспешно изпращане на запитването за оферта: ${error.message}`,
+        500,
+      );
     }
 
     return jsonSuccess(
@@ -44,6 +62,26 @@ export async function POST(request: Request) {
 
     if (error instanceof ZodError) {
       return jsonError("VALIDATION_ERROR", "Невалидни данни във формата за оферта.", 400, mapZodError(error));
+    }
+
+    if (error instanceof Error) {
+      console.error("[POST /api/quote] Unexpected error", error);
+
+      if (error.message.includes("SUPABASE_SERVICE_ROLE_KEY")) {
+        return jsonError(
+          "INTERNAL_ERROR",
+          "Липсва SUPABASE_SERVICE_ROLE_KEY в server env променливите.",
+          500,
+        );
+      }
+
+      if (error.message.includes("NEXT_PUBLIC_SUPABASE_URL")) {
+        return jsonError(
+          "INTERNAL_ERROR",
+          "Липсва NEXT_PUBLIC_SUPABASE_URL в env променливите.",
+          500,
+        );
+      }
     }
 
     return jsonError("INTERNAL_ERROR", "Възникна неочаквана сървърна грешка.", 500);

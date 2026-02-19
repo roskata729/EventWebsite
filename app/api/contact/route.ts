@@ -1,5 +1,6 @@
 import { ZodError } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerAuthClient } from "@/lib/supabase/server-auth";
 import { contactRequestSchema } from "@/lib/validation/contact";
 import { jsonError, jsonSuccess, mapZodError } from "@/lib/api/responses";
 
@@ -8,10 +9,16 @@ export async function POST(request: Request) {
     const payload = await request.json();
     const validated = contactRequestSchema.parse(payload);
 
+    const authSupabase = await createSupabaseServerAuthClient();
+    const {
+      data: { user },
+    } = await authSupabase.auth.getUser();
+
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase
       .from("contact_requests")
       .insert({
+        user_id: user?.id ?? null,
         name: validated.name,
         email: validated.email,
         phone: validated.phone || null,

@@ -13,6 +13,7 @@ export type Database = {
           phone: string | null;
           status: string;
           subject: string | null;
+          user_id: string | null;
         };
         Insert: {
           company?: string | null;
@@ -25,6 +26,7 @@ export type Database = {
           phone?: string | null;
           status?: string;
           subject?: string | null;
+          user_id?: string | null;
         };
         Update: {
           company?: string | null;
@@ -37,6 +39,60 @@ export type Database = {
           phone?: string | null;
           status?: string;
           subject?: string | null;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "contact_requests_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      profiles: {
+        Row: {
+          created_at: string;
+          email: string;
+          full_name: string | null;
+          id: string;
+          role: "admin" | "user";
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          email: string;
+          full_name?: string | null;
+          id: string;
+          role?: "admin" | "user";
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          email?: string;
+          full_name?: string | null;
+          id?: string;
+          role?: "admin" | "user";
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      password_reset_requests: {
+        Row: {
+          email: string;
+          id: string;
+          requested_at: string;
+        };
+        Insert: {
+          email: string;
+          id?: string;
+          requested_at?: string;
+        };
+        Update: {
+          email?: string;
+          id?: string;
+          requested_at?: string;
         };
         Relationships: [];
       };
@@ -55,6 +111,7 @@ export type Database = {
           phone: string | null;
           service_id: string | null;
           status: string;
+          user_id: string | null;
         };
         Insert: {
           budget?: number | null;
@@ -70,6 +127,7 @@ export type Database = {
           phone?: string | null;
           service_id?: string | null;
           status?: string;
+          user_id?: string | null;
         };
         Update: {
           budget?: number | null;
@@ -85,6 +143,7 @@ export type Database = {
           phone?: string | null;
           service_id?: string | null;
           status?: string;
+          user_id?: string | null;
         };
         Relationships: [
           {
@@ -92,6 +151,13 @@ export type Database = {
             columns: ["service_id"];
             isOneToOne: false;
             referencedRelation: "services";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "quote_requests_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];
@@ -234,7 +300,9 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
-    Enums: Record<string, never>;
+    Enums: {
+      app_role: "admin" | "user";
+    };
     CompositeTypes: Record<string, never>;
   };
 };
