@@ -49,6 +49,7 @@ export default async function AdminOverviewPage() {
         { href: "/admin/events", title: "Управление на събития", description: "Създавайте, публикувайте и обновявайте портфолиото." },
         { href: "/admin/services", title: "Каталог услуги", description: "Обновявайте активните услуги и позиционирането." },
         { href: "/admin/users", title: "Достъп на екипа", description: "Преглеждайте профили и админ права." },
+        { href: "/admin/settings", title: "Настройки на сайта", description: "Управлявайте името на бранда и глобалните параметри." },
       ],
     },
     en: {
@@ -84,6 +85,7 @@ export default async function AdminOverviewPage() {
         { href: "/admin/events", title: "Manage events", description: "Create, publish, and curate your portfolio." },
         { href: "/admin/services", title: "Service catalog", description: "Update active services and pricing positioning." },
         { href: "/admin/users", title: "Team access", description: "Audit profiles and admin permissions." },
+        { href: "/admin/settings", title: "Site settings", description: "Manage brand name and global site configuration." },
       ],
     },
     ro: {
@@ -119,6 +121,7 @@ export default async function AdminOverviewPage() {
         { href: "/admin/events", title: "Administrare evenimente", description: "Creati, publicati si gestionati portofoliul." },
         { href: "/admin/services", title: "Catalog servicii", description: "Actualizati serviciile active si pozitionarea." },
         { href: "/admin/users", title: "Acces echipa", description: "Auditati profilele si drepturile de admin." },
+        { href: "/admin/settings", title: "Setari site", description: "Gestionati numele brandului si parametrii globali." },
       ],
     },
   } as const;

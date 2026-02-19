@@ -5,11 +5,13 @@ import { NotificationBell } from "@/components/site/NotificationBell";
 import { Container } from "@/components/ui/Container";
 import { getMessages } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n/server";
+import { getBrandName } from "@/lib/site-settings";
 import { getCurrentUserContext } from "@/lib/supabase/user-auth";
 
 export async function SiteHeader() {
   const locale = await getServerLocale();
   const messages = getMessages(locale);
+  const brandName = await getBrandName();
   const { supabase, user, isAdmin } = await getCurrentUserContext();
   const notificationLabelsByLocale = {
     bg: {
@@ -102,7 +104,7 @@ export async function SiteHeader() {
       <Container className="py-4">
         <div className="grid items-center gap-3 lg:grid-cols-[auto_minmax(0,1fr)_auto]">
           <Link href="/" className="font-heading text-2xl text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
-            {messages.siteName}
+            {brandName}
           </Link>
 
           <nav className="flex min-w-0 flex-nowrap items-center gap-3 overflow-x-auto whitespace-nowrap text-[11px] uppercase tracking-[0.1em] text-brand-muted sm:text-xs lg:justify-center">

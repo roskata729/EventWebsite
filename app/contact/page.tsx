@@ -9,6 +9,7 @@ import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { getMessages } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n/server";
+import { getContactSettings } from "@/lib/site-settings";
 import { getCurrentUserSession } from "@/lib/supabase/user-auth";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default async function ContactPage() {
   const locale = await getServerLocale();
   const allMessages = getMessages(locale);
   const messages = allMessages.contact;
+  const contactSettings = await getContactSettings();
   const instagramLabelByLocale = {
     bg: "Инстаграм",
     en: "Instagram",
@@ -53,10 +55,10 @@ export default async function ContactPage() {
             </Card>
             <Card interactive={false}>
               <h3 className="font-heading text-heading-md">{messages.socialTitle}</h3>
-              <p className="mt-3 text-sm text-brand-muted">{messages.phone}: +359 700 123 45</p>
-              <p className="text-sm text-brand-muted">{messages.email}: hello@sabitiakolevi.bg</p>
-              <p className="text-sm text-brand-muted">{instagramLabel}: @sabitiakolevi</p>
-              <p className="text-sm text-brand-muted">{messages.linkedin}: {allMessages.siteName}</p>
+              <p className="mt-3 text-sm text-brand-muted">{messages.phone}: {contactSettings.phone}</p>
+              <p className="text-sm text-brand-muted">{messages.email}: {contactSettings.email}</p>
+              <p className="text-sm text-brand-muted">{instagramLabel}: {contactSettings.instagram}</p>
+              <p className="text-sm text-brand-muted">{messages.linkedin}: {contactSettings.linkedin}</p>
             </Card>
           </div>
         </Container>
