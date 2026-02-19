@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { requireAdminUser } from "@/lib/supabase/admin-auth";
 import { Card } from "@/components/ui/Card";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
+
+export const metadata: Metadata = { title: "Admin", description: "Административен панел", robots: { index: false, follow: false } };
 
 const adminLinks = [
   { href: "/admin/requests", title: "Запитвания", description: "Преглед на contact и quote заявки" },

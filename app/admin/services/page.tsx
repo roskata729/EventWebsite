@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { requireAdminUser } from "@/lib/supabase/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
+
+export const metadata: Metadata = { title: "Admin услуги", description: "Управление на услуги", robots: { index: false, follow: false } };
 
 export default async function AdminServicesPage() {
   await requireAdminUser();

@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { requireAdminUser } from "@/lib/supabase/admin-auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
+
+export const metadata: Metadata = { title: "Admin запитвания", description: "Преглед на запитвания", robots: { index: false, follow: false } };
 
 type RequestRow = {
   id: string;
