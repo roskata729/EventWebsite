@@ -141,14 +141,19 @@ export async function DELETE(request: Request) {
       return jsonSuccess({ deleted: "all" });
     }
 
-    const { error } = await supabase
+    const { data: deletedRows, error } = await supabase
       .from("notifications")
       .delete()
       .eq("id", body.id!)
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .select("id");
 
     if (error) {
       return jsonError("INTERNAL_ERROR", `Failed to delete notification: ${error.message}`, 500);
+    }
+
+    if (!deletedRows || deletedRows.length === 0) {
+      return jsonError("VALIDATION_ERROR", "Notification not found or cannot be deleted.", 404);
     }
 
     return jsonSuccess({ deleted: body.id });

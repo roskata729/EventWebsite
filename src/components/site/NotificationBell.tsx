@@ -159,11 +159,18 @@ export function NotificationBell({ initialUnreadCount, labels }: NotificationBel
       <button
         type="button"
         onClick={toggleOpen}
-        className="relative rounded-full border border-brand-accent/30 p-2 text-brand-muted transition hover:border-brand-accent/60 hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft"
+        className="relative p-1 text-brand-muted transition hover:text-brand-accentSoft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft"
         aria-label={labels.ariaLabel}
         aria-expanded={open}
       >
-        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          className={`h-6 w-6 ${unreadCount > 0 ? "notification-bell-ring" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true"
+        >
           <path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5" />
           <path d="M9 17a3 3 0 0 0 6 0" />
         </svg>

@@ -21,3 +21,40 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   outline: 2px solid #d4af37;
   outline-offset: 2px;
 }
+
+@keyframes notification-bell-ring {
+  0%,
+  70%,
+  100% {
+    transform: rotate(0deg);
+  }
+  73% {
+    transform: rotate(16deg);
+  }
+  76% {
+    transform: rotate(-14deg);
+  }
+  79% {
+    transform: rotate(12deg);
+  }
+  82% {
+    transform: rotate(-10deg);
+  }
+  85% {
+    transform: rotate(7deg);
+  }
+  88% {
+    transform: rotate(-5deg);
+  }
+}
+
+.notification-bell-ring {
+  transform-origin: 50% 2px;
+  animation: notification-bell-ring 3.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-bell-ring {
+    animation: none;
+  }
+}
