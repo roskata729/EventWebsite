@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Reveal } from "@/components/motion/Reveal";
 
 type SectionProps = {
   children: ReactNode;
@@ -6,5 +7,5 @@ type SectionProps = {
 };
 
 export function Section({ children, className = "" }: SectionProps) {
-  return <section className={`py-16 md:py-24 ${className}`}>{children}</section>;
+  return <Reveal className={className}>{children}</Reveal>;
 }
