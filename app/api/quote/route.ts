@@ -1,5 +1,6 @@
 import { ZodError } from "zod";
 import { jsonError, jsonSuccess, mapZodError } from "@/lib/api/responses";
+import { isRecoverableAuthError } from "@/lib/supabase/auth-errors";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServerAuthClient } from "@/lib/supabase/server-auth";
 import { quoteRequestSchema } from "@/lib/validation/quote";
@@ -10,9 +11,13 @@ export async function POST(request: Request) {
     const validated = quoteRequestSchema.parse(payload);
 
     const authSupabase = await createSupabaseServerAuthClient();
-    const {
-      data: { user },
-    } = await authSupabase.auth.getUser();
+    const { data: authData, error: authError } = await authSupabase.auth
+      .getUser()
+      .catch((caughtError) => ({ data: { user: null }, error: caughtError }));
+    if (authError && !isRecoverableAuthError(authError)) {
+      return jsonError("INTERNAL_ERROR", "Неуспешно удостоверяване на потребителската сесия.", 500);
+    }
+    const user = authData.user ?? null;
 
     const supabase = createSupabaseServerClient();
     const { data, error } = await supabase

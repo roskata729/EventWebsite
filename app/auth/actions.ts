@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { isRecoverableAuthError } from "@/lib/supabase/auth-errors";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServerAuthClient } from "@/lib/supabase/server-auth";
 import { getSiteUrl } from "@/lib/supabase/env";
@@ -90,7 +91,7 @@ export async function signUpWithEmailAction(formData: FormData) {
 
 export async function signOutAction() {
   const supabase = await createSupabaseServerAuthClient();
-  await supabase.auth.signOut();
+  await supabase.auth.signOut({ scope: "local" });
   redirect("/");
 }
 
@@ -157,19 +158,24 @@ export async function resetPasswordAction(formData: FormData) {
   }
 
   const supabase = await createSupabaseServerAuthClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: authData, error: authError } = await supabase.auth
+    .getUser()
+    .catch((caughtError) => ({ data: { user: null }, error: caughtError }));
+
+  if (authError && !isRecoverableAuthError(authError)) {
+    redirect("/auth/login?error=invalid_credentials");
+  }
+  const user = authData.user ?? null;
 
   if (!user) {
     redirect("/auth/login?error=invalid_credentials");
   }
 
-  const { error } = await supabase.auth.updateUser({
+  const { error: updateError } = await supabase.auth.updateUser({
     password: parsed.data.password,
   });
 
-  if (error) {
+  if (updateError) {
     redirect("/auth/reset-password?error=update_failed");
   }
 

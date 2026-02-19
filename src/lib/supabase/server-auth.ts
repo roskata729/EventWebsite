@@ -16,7 +16,6 @@ export async function createSupabaseServerAuthClient() {
           cookieStore.set({ name, value, ...options });
         } catch {
           // In Server Components, cookie mutation is not allowed.
-          // Middleware/Route Handlers will persist refreshed cookies when available.
         }
       },
       remove(name: string, options: CookieOptions) {
@@ -24,7 +23,6 @@ export async function createSupabaseServerAuthClient() {
           cookieStore.set({ name, value: "", ...options });
         } catch {
           // In Server Components, cookie mutation is not allowed.
-          // Middleware/Route Handlers will persist refreshed cookies when available.
         }
       },
     },
