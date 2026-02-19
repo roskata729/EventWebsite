@@ -4,8 +4,13 @@ import { Reveal } from "@/components/motion/Reveal";
 type SectionProps = {
   children: ReactNode;
   className?: string;
+  id?: string;
 };
 
-export function Section({ children, className = "" }: SectionProps) {
-  return <Reveal className={className}>{children}</Reveal>;
+export function Section({ children, className = "", id }: SectionProps) {
+  return (
+    <Reveal className={className} id={id}>
+      {children}
+    </Reveal>
+  );
 }

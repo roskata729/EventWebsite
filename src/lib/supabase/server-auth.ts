@@ -12,10 +12,20 @@ export async function createSupabaseServerAuthClient() {
         return cookieStore.get(name)?.value;
       },
       set(name: string, value: string, options: CookieOptions) {
-        cookieStore.set({ name, value, ...options });
+        try {
+          cookieStore.set({ name, value, ...options });
+        } catch {
+          // In Server Components, cookie mutation is not allowed.
+          // Middleware/Route Handlers will persist refreshed cookies when available.
+        }
       },
       remove(name: string, options: CookieOptions) {
-        cookieStore.set({ name, value: "", ...options });
+        try {
+          cookieStore.set({ name, value: "", ...options });
+        } catch {
+          // In Server Components, cookie mutation is not allowed.
+          // Middleware/Route Handlers will persist refreshed cookies when available.
+        }
       },
     },
   });

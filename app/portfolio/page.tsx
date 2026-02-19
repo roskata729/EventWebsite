@@ -6,6 +6,8 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
 import { loadPublishedGallery } from "@/lib/cms";
+import { getMessages } from "@/lib/i18n";
+import { getServerLocale } from "@/lib/i18n/server";
 
 export const metadata: Metadata = {
   title: "Портфолио",
@@ -13,19 +15,34 @@ export const metadata: Metadata = {
   openGraph: { title: "Портфолио | Събития Колеви", description: "Подбрани събития с визуални акценти.", url: "/portfolio", type: "website" },
 };
 
-const fallbackGallery = [
-  { id: 1, title: "Луксозна гала вечеря", category: "Корпоративни", description: "Корпоративна гала с впечатляващо осветление и сценография по бранд насоки.", imageUrl: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1000&q=80" },
-  { id: 2, title: "Градинска сватба", category: "Сватби", description: "Романтична церемония на открито с флорални арки и вечерна светлинна концепция.", imageUrl: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80" },
-  { id: 3, title: "Премиерно частно парти", category: "Частни", description: "Енергично събитие с тематични зони, музика на живо и персонализиран декор.", imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1000&q=80" },
-];
+const fallbackGalleryByLocale = {
+  bg: [
+    { id: 1, title: "Луксозна гала вечеря", category: "Корпоративни", description: "Корпоративна гала с впечатляващо осветление и сценография по бранд насоки.", imageUrl: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1000&q=80" },
+    { id: 2, title: "Градинска сватба", category: "Сватби", description: "Романтична церемония на открито с флорални арки и вечерна светлинна концепция.", imageUrl: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80" },
+    { id: 3, title: "Премиерно частно парти", category: "Частни", description: "Енергично събитие с тематични зони, музика на живо и персонализиран декор.", imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1000&q=80" },
+  ],
+  en: [
+    { id: 1, title: "Luxury gala dinner", category: "Corporate", description: "Corporate gala with striking lighting and brand-aligned stage design.", imageUrl: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1000&q=80" },
+    { id: 2, title: "Garden wedding", category: "Weddings", description: "Romantic outdoor ceremony with floral arches and an evening lighting concept.", imageUrl: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80" },
+    { id: 3, title: "Premiere private party", category: "Private", description: "High-energy event with themed zones, live music, and personalized decor.", imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1000&q=80" },
+  ],
+  ro: [
+    { id: 1, title: "Cină de gală luxoasă", category: "Corporate", description: "Gală corporate cu iluminat impresionant și scenografie adaptată brandului.", imageUrl: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1000&q=80" },
+    { id: 2, title: "Nuntă în grădină", category: "Nunți", description: "Ceremonie romantică în aer liber, cu arcade florale și concept de lumini de seară.", imageUrl: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1000&q=80" },
+    { id: 3, title: "Petrecere privată de lansare", category: "Private", description: "Eveniment dinamic cu zone tematice, muzică live și decor personalizat.", imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1000&q=80" },
+  ],
+};
 
 export default async function PortfolioPage() {
-  const items = await loadPublishedGallery(fallbackGallery);
+  const locale = await getServerLocale();
+  const messages = getMessages(locale).portfolio;
+  const items = await loadPublishedGallery(fallbackGalleryByLocale[locale]);
+
   return (
     <main className="min-h-screen bg-brand-background">
       <SiteHeader />
-      <PageHero eyebrow="Портфолио" title="Подбрани събития на Събития Колеви" description="Филтрирайте по категория и разгледайте реализирани проекти с визуални акценти и кратки описания." />
-      <Section><Container><PortfolioGallery items={items} /></Container></Section>
+      <PageHero eyebrow={messages.heroEyebrow} title={messages.heroTitle} description={messages.heroDescription} />
+      <Section><Container><PortfolioGallery items={items} locale={locale} /></Container></Section>
       <SiteFooter />
     </main>
   );

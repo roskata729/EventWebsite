@@ -4,19 +4,26 @@ import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { getMessages, type Locale } from "@/lib/i18n";
 import type { CmsGalleryItem } from "@/lib/cms";
 
 type PortfolioGalleryProps = {
   items: CmsGalleryItem[];
+  locale: Locale;
 };
 
-export function PortfolioGallery({ items }: PortfolioGalleryProps) {
-  const [activeFilter, setActiveFilter] = useState("Всички");
+export function PortfolioGallery({ items, locale }: PortfolioGalleryProps) {
+  const messages = getMessages(locale).portfolio;
+  const [activeFilter, setActiveFilter] = useState(messages.all);
   const [selected, setSelected] = useState<CmsGalleryItem | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  const filters = useMemo(() => ["Всички", ...new Set(items.map((item) => item.category))], [items]);
-  const filtered = useMemo(() => items.filter((item) => activeFilter === "Всички" || item.category === activeFilter), [activeFilter, items]);
+  const filters = useMemo(() => [messages.all, ...new Set(items.map((item) => item.category))], [items, messages.all]);
+  const filtered = useMemo(() => items.filter((item) => activeFilter === messages.all || item.category === activeFilter), [activeFilter, items, messages.all]);
+
+  useEffect(() => {
+    setActiveFilter(messages.all);
+  }, [messages.all]);
 
   useEffect(() => {
     if (!selected) return;
@@ -63,7 +70,7 @@ export function PortfolioGallery({ items }: PortfolioGalleryProps) {
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-brand-background/90 p-4" onClick={() => setSelected(null)}>
           <div role="dialog" aria-modal="true" aria-label={selected.title} className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-brand-accent/40 bg-brand-surface" onClick={(event) => event.stopPropagation()}>
             <button ref={closeButtonRef} onClick={() => setSelected(null)} className="absolute right-4 top-4 rounded-full bg-brand-background px-3 py-1 text-xs uppercase tracking-[0.14em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-accentSoft">
-              Затвори
+              {messages.close}
             </button>
             <div className="relative h-64 w-full sm:h-80">
               <Image src={selected.imageUrl} alt={selected.title} fill sizes="(max-width: 768px) 100vw, 768px" loading="lazy" className="object-cover" />

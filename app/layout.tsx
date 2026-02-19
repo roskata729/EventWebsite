@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { getServerLocale } from "@/lib/i18n/server";
 
 const siteUrl = "https://sabitiakolevi.bg";
 
@@ -48,13 +49,15 @@ const localBusinessSchema = {
   description: "Event service за корпоративни събития, сватби и частни партита.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getServerLocale();
+
   return (
-    <html lang="bg">
+    <html lang={locale}>
       <body>
         {children}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
