@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState, useTransition } from "react";
 
@@ -15,13 +15,32 @@ export type AdminRequestRow = {
   eventDate: string | null;
 };
 
+export type RequestsManagerLabels = {
+  searchPlaceholder: string;
+  allTypes: string;
+  typeContact: string;
+  typeQuote: string;
+  allStatuses: string;
+  result: string;
+  results: string;
+  tableType: string;
+  tableName: string;
+  tableEmail: string;
+  tableSubjectEvent: string;
+  tableCreated: string;
+  tableStatus: string;
+  dateLocale: string;
+  statusLabels: Record<string, string>;
+};
+
 type RequestsManagerProps = {
   initialRows: AdminRequestRow[];
+  labels: RequestsManagerLabels;
 };
 
 const statuses = ["new", "in_review", "approved", "scheduled", "done", "rejected"];
 
-export function RequestsManager({ initialRows }: RequestsManagerProps) {
+export function RequestsManager({ initialRows, labels }: RequestsManagerProps) {
   const [rows, setRows] = useState(initialRows);
   const [typeFilter, setTypeFilter] = useState<"all" | RequestType>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | string>("all");
@@ -72,7 +91,7 @@ export function RequestsManager({ initialRows }: RequestsManagerProps) {
         <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search by name, email, subject"
+          placeholder={labels.searchPlaceholder}
           className="rounded-xl border border-brand-accent/25 bg-brand-elevated px-3 py-2 text-sm"
         />
         <select
@@ -80,24 +99,24 @@ export function RequestsManager({ initialRows }: RequestsManagerProps) {
           onChange={(event) => setTypeFilter(event.target.value as "all" | RequestType)}
           className="rounded-xl border border-brand-accent/25 bg-brand-elevated px-3 py-2 text-sm"
         >
-          <option value="all">All types</option>
-          <option value="contact">Contact</option>
-          <option value="quote">Quote</option>
+          <option value="all">{labels.allTypes}</option>
+          <option value="contact">{labels.typeContact}</option>
+          <option value="quote">{labels.typeQuote}</option>
         </select>
         <select
           value={statusFilter}
           onChange={(event) => setStatusFilter(event.target.value)}
           className="rounded-xl border border-brand-accent/25 bg-brand-elevated px-3 py-2 text-sm"
         >
-          <option value="all">All statuses</option>
+          <option value="all">{labels.allStatuses}</option>
           {statuses.map((status) => (
             <option key={status} value={status}>
-              {status}
+              {labels.statusLabels[status] ?? status}
             </option>
           ))}
         </select>
         <div className="flex items-center justify-end text-sm text-brand-muted">
-          {filteredRows.length} result{filteredRows.length === 1 ? "" : "s"}
+          {filteredRows.length} {filteredRows.length === 1 ? labels.result : labels.results}
         </div>
       </div>
 
@@ -105,12 +124,12 @@ export function RequestsManager({ initialRows }: RequestsManagerProps) {
         <table className="min-w-full text-left text-sm">
           <thead className="bg-brand-surface">
             <tr>
-              <th className="px-4 py-3">Type</th>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Subject / Event</th>
-              <th className="px-4 py-3">Created</th>
-              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">{labels.tableType}</th>
+              <th className="px-4 py-3">{labels.tableName}</th>
+              <th className="px-4 py-3">{labels.tableEmail}</th>
+              <th className="px-4 py-3">{labels.tableSubjectEvent}</th>
+              <th className="px-4 py-3">{labels.tableCreated}</th>
+              <th className="px-4 py-3">{labels.tableStatus}</th>
             </tr>
           </thead>
           <tbody>
@@ -120,7 +139,7 @@ export function RequestsManager({ initialRows }: RequestsManagerProps) {
                 <td className="px-4 py-3">{row.name}</td>
                 <td className="px-4 py-3">{row.email}</td>
                 <td className="px-4 py-3 text-brand-muted">{row.subject || row.eventDate || "-"}</td>
-                <td className="px-4 py-3">{new Date(row.createdAt).toLocaleString("en-US")}</td>
+                <td className="px-4 py-3">{new Date(row.createdAt).toLocaleString(labels.dateLocale)}</td>
                 <td className="px-4 py-3">
                   <select
                     value={row.status}
@@ -130,7 +149,7 @@ export function RequestsManager({ initialRows }: RequestsManagerProps) {
                   >
                     {statuses.map((status) => (
                       <option key={status} value={status}>
-                        {status}
+                        {labels.statusLabels[status] ?? status}
                       </option>
                     ))}
                   </select>
@@ -143,3 +162,4 @@ export function RequestsManager({ initialRows }: RequestsManagerProps) {
     </div>
   );
 }
+

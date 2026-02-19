@@ -1,5 +1,6 @@
 import { z, ZodError } from "zod";
 import { jsonError, jsonSuccess, mapZodError } from "@/lib/api/responses";
+import { buildStatusNotificationContent } from "@/lib/notifications/request-status";
 import { isAdminApiRequest } from "@/lib/supabase/admin-api";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -29,7 +30,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ type:
       .from(table)
       .update({ status: body.status })
       .eq("id", params.id)
-      .select("id, status")
+      .select("id, status, user_id")
       .maybeSingle();
 
     if (error) {
@@ -38,6 +39,29 @@ export async function PATCH(request: Request, context: { params: Promise<{ type:
 
     if (!data) {
       return jsonError("VALIDATION_ERROR", "Request not found.", 404);
+    }
+    const content = buildStatusNotificationContent(params.type, data.status);
+
+    if (data.user_id) {
+      const { error: notificationError } = await supabase.from("notifications").insert({
+        user_id: data.user_id,
+        title: content.title,
+        message: content.message,
+        target_url: "/account",
+        metadata: {
+          requestType: params.type,
+          requestId: data.id,
+          status: data.status,
+        },
+      });
+
+      if (notificationError) {
+        return jsonError(
+          "INTERNAL_ERROR",
+          `Failed to create notification: ${notificationError.message}`,
+          500,
+        );
+      }
     }
 
     return jsonSuccess({ request: data });

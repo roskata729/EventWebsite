@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import { FormEvent, useState, useTransition } from "react";
+import type { Locale } from "@/lib/i18n";
 
 export type AdminEvent = {
   id: string;
@@ -17,6 +18,7 @@ export type AdminEvent = {
 
 type EventsManagerProps = {
   initialEvents: AdminEvent[];
+  locale: Locale;
 };
 
 const emptyForm = {
@@ -30,7 +32,56 @@ const emptyForm = {
   isPublished: false,
 };
 
-export function EventsManager({ initialEvents }: EventsManagerProps) {
+export function EventsManager({ initialEvents, locale }: EventsManagerProps) {
+  const copyByLocale = {
+    bg: {
+      addEvent: "Добави събитие",
+      eventTitle: "Заглавие",
+      category: "Категория",
+      location: "Локация",
+      description: "Описание",
+      publishNow: "Публикувай веднага",
+      saving: "Записване...",
+      create: "Създай",
+      noMetadata: "Няма мета данни",
+      published: "Публикувано",
+      draft: "Чернова",
+      delete: "Изтрий",
+      createFailed: "Неуспешно създаване на събитие.",
+    },
+    en: {
+      addEvent: "Add event",
+      eventTitle: "Event title",
+      category: "Category",
+      location: "Location",
+      description: "Description",
+      publishNow: "Publish immediately",
+      saving: "Saving...",
+      create: "Create event",
+      noMetadata: "No metadata",
+      published: "Published",
+      draft: "Draft",
+      delete: "Delete",
+      createFailed: "Failed to create event.",
+    },
+    ro: {
+      addEvent: "Adauga eveniment",
+      eventTitle: "Titlu eveniment",
+      category: "Categorie",
+      location: "Locatie",
+      description: "Descriere",
+      publishNow: "Publica imediat",
+      saving: "Se salveaza...",
+      create: "Creeaza eveniment",
+      noMetadata: "Fara metadate",
+      published: "Publicat",
+      draft: "Draft",
+      delete: "Sterge",
+      createFailed: "Crearea evenimentului a esuat.",
+    },
+  } as const;
+
+  const t = copyByLocale[locale];
   const [events, setEvents] = useState(initialEvents);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
@@ -59,7 +110,7 @@ export function EventsManager({ initialEvents }: EventsManagerProps) {
       const payload = (await response.json()) as { success?: boolean; data?: { event?: AdminEvent }; error?: { message?: string } };
 
       if (!response.ok || !payload.success || !payload.data?.event) {
-        setError(payload.error?.message ?? "Failed to create event.");
+        setError(payload.error?.message ?? t.createFailed);
         return;
       }
 
@@ -104,12 +155,12 @@ export function EventsManager({ initialEvents }: EventsManagerProps) {
   return (
     <div className="mt-6 grid gap-6 xl:grid-cols-[1.05fr_1.45fr]">
       <form onSubmit={onSubmit} className="space-y-3 rounded-3xl border border-brand-accent/30 bg-brand-surface/80 p-5">
-        <h2 className="font-heading text-heading-md">Add event</h2>
+        <h2 className="font-heading text-heading-md">{t.addEvent}</h2>
         <input
           required
           value={form.title}
           onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
-          placeholder="Event title"
+          placeholder={t.eventTitle}
           className="w-full rounded-xl border border-brand-accent/20 bg-brand-elevated px-3 py-2 text-sm"
         />
         <input
@@ -123,13 +174,13 @@ export function EventsManager({ initialEvents }: EventsManagerProps) {
           <input
             value={form.category}
             onChange={(event) => setForm((prev) => ({ ...prev, category: event.target.value }))}
-            placeholder="Category"
+            placeholder={t.category}
             className="w-full rounded-xl border border-brand-accent/20 bg-brand-elevated px-3 py-2 text-sm"
           />
           <input
             value={form.location}
             onChange={(event) => setForm((prev) => ({ ...prev, location: event.target.value }))}
-            placeholder="Location"
+            placeholder={t.location}
             className="w-full rounded-xl border border-brand-accent/20 bg-brand-elevated px-3 py-2 text-sm"
           />
         </div>
@@ -149,7 +200,7 @@ export function EventsManager({ initialEvents }: EventsManagerProps) {
         <textarea
           value={form.description}
           onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
-          placeholder="Description"
+          placeholder={t.description}
           rows={4}
           className="w-full rounded-xl border border-brand-accent/20 bg-brand-elevated px-3 py-2 text-sm"
         />
@@ -159,7 +210,7 @@ export function EventsManager({ initialEvents }: EventsManagerProps) {
             checked={form.isPublished}
             onChange={(event) => setForm((prev) => ({ ...prev, isPublished: event.target.checked }))}
           />
-          Publish immediately
+          {t.publishNow}
         </label>
         {error ? <p className="text-sm text-red-300">{error}</p> : null}
         <button
@@ -167,7 +218,7 @@ export function EventsManager({ initialEvents }: EventsManagerProps) {
           className="rounded-full border border-brand-accent bg-brand-accent px-5 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-brand-background disabled:opacity-60"
           type="submit"
         >
-          {isPending ? "Saving..." : "Create event"}
+          {isPending ? t.saving : t.create}
         </button>
       </form>
 
@@ -182,7 +233,7 @@ export function EventsManager({ initialEvents }: EventsManagerProps) {
                 <h3 className="font-heading text-2xl">{event.title}</h3>
                 <p className="text-xs uppercase tracking-[0.14em] text-brand-accentSoft">/{event.slug}</p>
                 <p className="mt-1 text-sm text-brand-muted">
-                  {[event.category, event.location, event.event_date].filter(Boolean).join(" - ") || "No metadata"}
+                  {[event.category, event.location, event.event_date].filter(Boolean).join(" - ") || t.noMetadata}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -195,14 +246,14 @@ export function EventsManager({ initialEvents }: EventsManagerProps) {
                       : "border-brand-accent/30 bg-brand-elevated text-brand-muted"
                   }`}
                 >
-                  {event.is_published ? "Published" : "Draft"}
+                  {event.is_published ? t.published : t.draft}
                 </button>
                 <button
                   onClick={() => deleteEvent(event)}
                   disabled={isPending}
                   className="rounded-full border border-red-300/40 bg-red-500/10 px-3 py-1 text-xs uppercase tracking-[0.1em] text-red-200"
                 >
-                  Delete
+                  {t.delete}
                 </button>
               </div>
             </div>

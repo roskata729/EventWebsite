@@ -21,6 +21,12 @@ export default async function ContactPage() {
   const locale = await getServerLocale();
   const allMessages = getMessages(locale);
   const messages = allMessages.contact;
+  const instagramLabelByLocale = {
+    bg: "Инстаграм",
+    en: "Instagram",
+    ro: "Instagram",
+  } as const;
+  const instagramLabel = instagramLabelByLocale[locale];
   const { user } = await getCurrentUserSession();
 
   if (!user) {
@@ -49,7 +55,7 @@ export default async function ContactPage() {
               <h3 className="font-heading text-heading-md">{messages.socialTitle}</h3>
               <p className="mt-3 text-sm text-brand-muted">{messages.phone}: +359 700 123 45</p>
               <p className="text-sm text-brand-muted">{messages.email}: hello@sabitiakolevi.bg</p>
-              <p className="text-sm text-brand-muted">Instagram: @sabitiakolevi</p>
+              <p className="text-sm text-brand-muted">{instagramLabel}: @sabitiakolevi</p>
               <p className="text-sm text-brand-muted">{messages.linkedin}: {allMessages.siteName}</p>
             </Card>
           </div>

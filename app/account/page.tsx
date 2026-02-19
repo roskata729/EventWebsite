@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -33,6 +33,8 @@ const accountByLocale: Record<
     noSubject: string;
     noRecords: string;
     dateLocale: string;
+    statusLabels: Record<string, string>;
+    roleLabels: Record<string, string>;
   }
 > = {
   bg: {
@@ -50,6 +52,15 @@ const accountByLocale: Record<
     noSubject: "Без тема",
     noRecords: "Няма записи.",
     dateLocale: "bg-BG",
+    statusLabels: {
+      new: "Нова",
+      in_review: "В обработка",
+      approved: "Одобрена",
+      scheduled: "Планирана",
+      done: "Завършена",
+      rejected: "Отказана",
+    },
+    roleLabels: { admin: "Админ", user: "Потребител" },
   },
   en: {
     title: "My profile",
@@ -66,6 +77,15 @@ const accountByLocale: Record<
     noSubject: "No subject",
     noRecords: "No records.",
     dateLocale: "en-US",
+    statusLabels: {
+      new: "New",
+      in_review: "In review",
+      approved: "Approved",
+      scheduled: "Scheduled",
+      done: "Done",
+      rejected: "Rejected",
+    },
+    roleLabels: { admin: "Admin", user: "User" },
   },
   ro: {
     title: "Profilul meu",
@@ -82,6 +102,15 @@ const accountByLocale: Record<
     noSubject: "Fara subiect",
     noRecords: "Nu exista inregistrari.",
     dateLocale: "ro-RO",
+    statusLabels: {
+      new: "Noua",
+      in_review: "In analiza",
+      approved: "Aprobata",
+      scheduled: "Programata",
+      done: "Finalizata",
+      rejected: "Respinsa",
+    },
+    roleLabels: { admin: "Admin", user: "Utilizator" },
   },
 };
 
@@ -107,6 +136,9 @@ export default async function AccountPage() {
     supabase.from("profiles").select("full_name, role").eq("id", user.id).maybeSingle(),
   ]);
 
+  const translateStatus = (status: string) => t.statusLabels[status] ?? status;
+  const roleValue = profile?.role ?? (isAdmin ? "admin" : "user");
+
   return (
     <main className="min-h-screen bg-brand-background">
       <SiteHeader />
@@ -116,7 +148,7 @@ export default async function AccountPage() {
             <h1 className="font-heading text-heading-xl">{t.title}</h1>
             <p className="mt-2 text-sm text-brand-muted">{t.email}: {user.email}</p>
             <p className="text-sm text-brand-muted">{t.name}: {profile?.full_name ?? t.noName}</p>
-            <p className="text-sm text-brand-muted">{t.role}: {profile?.role ?? (isAdmin ? "admin" : "user")}</p>
+            <p className="text-sm text-brand-muted">{t.role}: {t.roleLabels[roleValue] ?? roleValue}</p>
             {isAdmin ? <Link href="/admin" className="mt-3 inline-block text-sm underline">{t.toAdmin}</Link> : null}
           </Card>
 
@@ -125,7 +157,7 @@ export default async function AccountPage() {
             <ul className="mt-4 space-y-2 text-sm">
               {(contactRequests ?? []).map((item) => (
                 <li key={item.id} className="rounded-lg border border-brand-accent/20 p-3">
-                  <p>{t.status}: {item.status}</p>
+                  <p>{t.status}: {translateStatus(item.status)}</p>
                   <p>{t.subject}: {item.subject ?? t.noSubject}</p>
                   <p className="text-brand-muted">{new Date(item.created_at).toLocaleString(t.dateLocale)}</p>
                 </li>
@@ -139,7 +171,7 @@ export default async function AccountPage() {
             <ul className="mt-4 space-y-2 text-sm">
               {(quoteRequests ?? []).map((item) => (
                 <li key={item.id} className="rounded-lg border border-brand-accent/20 p-3">
-                  <p>{t.status}: {item.status}</p>
+                  <p>{t.status}: {translateStatus(item.status)}</p>
                   <p>{t.eventType}: {item.event_type}</p>
                   <p className="text-brand-muted">{new Date(item.created_at).toLocaleString(t.dateLocale)}</p>
                 </li>
